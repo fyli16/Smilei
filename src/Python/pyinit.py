@@ -203,6 +203,10 @@ class Main(SmileiSingleton):
     save_magnectic_fields_for_SM = True
     number_of_pml_cells = [[10]]
 
+    # Field-damping "mask" absorbing layer (EM_boundary_conditions = "damping")
+    EM_damping_thickness = 0.
+    EM_damping_coefficient = 1.
+
     def default_sigma(x):
         return 20. * x**2  
     def default_integrate_sigma(x):

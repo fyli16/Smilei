@@ -130,6 +130,12 @@ public:
     std::vector< std::vector<bool> > open_boundaries;
     bool save_magnectic_fields_for_SM;
     std::vector< std::vector<int> > number_of_pml_cells;
+
+    //! Thickness (code length units) of the field-damping "mask" layer (EM BC "damping")
+    double EM_damping_thickness;
+
+    //! Maximum damping strength in [0,1] of the field-damping "mask" layer
+    double EM_damping_coefficient;
     std::vector< std::vector<double> > envelope_pml_sigma_parameters;
     std::vector< std::vector<double> > envelope_pml_kappa_parameters;
     std::vector< std::vector<double> > envelope_pml_alpha_parameters;

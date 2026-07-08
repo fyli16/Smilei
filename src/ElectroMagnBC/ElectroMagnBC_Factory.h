@@ -5,9 +5,11 @@
 #include "ElectroMagnBC.h"
 #include "ElectroMagnBC1D_SM.h"
 #include "ElectroMagnBC1D_refl.h"
+#include "ElectroMagnBC1D_Damping.h"
 #include "ElectroMagnBC2D_SM.h"
 #include "ElectroMagnBC2D_refl.h"
 #include "ElectroMagnBC2D_PML.h"
+#include "ElectroMagnBC2D_Damping.h"
 #include "ElectroMagnBC3D_SM.h"
 #include "ElectroMagnBC3D_refl.h"
 #include "ElectroMagnBC3D_BM.h"
@@ -53,6 +55,10 @@ public:
                 else if( params.EM_BCs[0][ii] == "reflective" ) {
                     emBoundCond[ii] = new ElectroMagnBC1D_refl( params, patch, ii );
                 }
+                // damping "mask" absorbing layer
+                else if( params.EM_BCs[0][ii] == "damping" ) {
+                    emBoundCond[ii] = new ElectroMagnBC1D_Damping( params, patch, ii );
+                }
                 // else: error
                 else if( params.EM_BCs[0][ii] != "periodic" ) {
                     ERROR( "Unknown EM x-boundary condition `" << params.EM_BCs[0][ii] << "`" );
@@ -80,6 +86,10 @@ public:
                 // pml bcs
                 else if( params.EM_BCs[0][ii] == "PML" ) {
                     emBoundCond[ii] = new ElectroMagnBC2D_PML( params, patch, ii );
+                }
+                // damping "mask" absorbing layer
+                else if( params.EM_BCs[0][ii] == "damping" ) {
+                    emBoundCond[ii] = new ElectroMagnBC2D_Damping( params, patch, ii );
                 }
                 // else: error
                 else if( params.EM_BCs[0][ii] != "periodic" ) {

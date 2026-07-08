@@ -395,6 +395,26 @@ Params::Params( SmileiMPI *smpi, std::vector<std::string> namelistsFiles ) :
         if (EM_BCs[iDim][0] == "PML" || EM_BCs[iDim][1] == "PML"){ use_pml = true; }
     }
 
+    // Field-damping "mask" absorbing layer parameters
+    PyTools::extract( "EM_damping_thickness", EM_damping_thickness, "Main" );
+    PyTools::extract( "EM_damping_coefficient", EM_damping_coefficient, "Main" );
+    for( unsigned int iDim=0; iDim<nDim_field; iDim++ ) {
+        if( EM_BCs[iDim][0] == "damping" || EM_BCs[iDim][1] == "damping" ) {
+            if( iDim != 0 ) {
+                ERROR_NAMELIST( "EM_boundary_conditions 'damping' is currently only supported along x",
+                                LINK_NAMELIST + std::string("#main-variables") );
+            }
+            if( EM_damping_thickness <= 0. ) {
+                ERROR_NAMELIST( "EM_boundary_conditions 'damping' requires a strictly positive `EM_damping_thickness`",
+                                LINK_NAMELIST + std::string("#main-variables") );
+            }
+            if( EM_damping_coefficient < 0. || EM_damping_coefficient > 1. ) {
+                ERROR_NAMELIST( "`EM_damping_coefficient` must lie in [0,1]",
+                                LINK_NAMELIST + std::string("#main-variables") );
+            }
+        }
+    }
+
     int n_envlaser = PyTools::nComponents( "LaserEnvelope" );
     if( n_envlaser >=1 ) {
         Laser_Envelope_model = true;

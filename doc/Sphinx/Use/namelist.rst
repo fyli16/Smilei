@@ -297,7 +297,7 @@ The block ``Main`` is **mandatory** and has the following syntax::
   :default: ``[["periodic"]]``
 
   The boundary conditions for the electromagnetic fields. Each boundary may have one of
-  the following conditions: ``"periodic"``, ``"silver-muller"``, ``"reflective"``, ``"ramp??"`` or ``"PML"``.
+  the following conditions: ``"periodic"``, ``"silver-muller"``, ``"reflective"``, ``"ramp??"``, ``"PML"`` or ``"damping"``.
 
   | **Syntax 1:** ``[[bc_all]]``, identical for all boundaries.
   | **Syntax 2:** ``[[bc_X], [bc_Y], ...]``, different depending on x, y or z.
@@ -324,6 +324,17 @@ The block ``Main`` is **mandatory** and has the following syntax::
     It supports laser injection as in ``"silver-muller"``.
     If not all boundary conditions are ``PML``, make sure to set ``number_of_pml_cells=0`` on boundaries not using PML.
 
+  * ``"damping"`` is an absorbing "mask" (sponge) layer of finite thickness placed *inside*
+    the box, currently supported only along ``x``. Inside the layer the transverse
+    electromagnetic wave fields (``Ey``, ``Ez``, ``By``, ``Bz``) are multiplied every time
+    step by a smooth coefficient that ramps from 1 (no damping) at the inner edge of the mask
+    to ``1 - EM_damping_coefficient`` at the box wall, following a parabolic profile.
+    The parallel fields ``Bx`` (e.g. a uniform guide field :math:`B_0`) and ``Ex`` are left
+    untouched, so a mean magnetic field and the electrostatic plasma response are preserved.
+    This is intended to absorb plasma waves (e.g. Alfven waves) before they reach the boundary.
+    The thickness is set by ``"EM_damping_thickness"`` and the strength by
+    ``"EM_damping_coefficient"``.
+
 .. py:data:: EM_boundary_conditions_k
 
   :type: list of lists of floats
@@ -347,6 +358,24 @@ The block ``Main`` is **mandatory** and has the following syntax::
   :default: ``[[10,10],[10,10],[10,10]]``
 
   Defines the number of cells in the ``"PML"`` layers using the same alternative syntaxes as ``"EM_boundary_conditions"``.
+
+.. py:data:: EM_damping_thickness
+
+  :type: float
+  :default: ``0.``
+
+  Thickness (in code length units) of the ``"damping"`` mask layer, applied at both the
+  x-min and x-max ``"damping"`` boundaries. Must be strictly positive when a ``"damping"``
+  boundary is used, and small enough that the two masks do not overlap.
+
+.. py:data:: EM_damping_coefficient
+
+  :type: float
+  :default: ``1.``
+
+  Maximum damping strength (in ``[0,1]``) of the ``"damping"`` mask layer. The per-step
+  field multiplier reaches ``1 - EM_damping_coefficient`` at the box wall (``1`` meaning the
+  transverse fields are fully removed there) and returns to ``1`` at the inner edge of the mask.
 
 .. rst-class:: experimental
 
