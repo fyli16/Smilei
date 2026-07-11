@@ -38,7 +38,7 @@ def _smilei_check():
     for CheckClassName in ["SmileiComponent","Species", "Laser","Collisions",
             "DiagProbe","DiagParticleBinning", "DiagScalar","DiagFields",
             "DiagTrackParticles","DiagNewParticles","DiagPerformances",
-            "ExternalField","PrescribedField",
+            "ExternalField","PrescribedField","FieldInjector",
             "SmileiSingleton","Main","Checkpoints","LoadBalancing","MovingWindow",
             "RadiationReaction", "ParticleData", "MultiphotonBreitWheeler",
             "Vectorization", "MultipleDecomposition"]:

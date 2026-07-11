@@ -262,6 +262,9 @@ public :
     
     //! For all patches, apply the antenna current
     void applyAntennas( double time );
+
+    //! For all patches, add the field injectors' profiles (additive soft source) to E/B
+    void applyFieldInjectors( double time );
     
     //! For all patches, apply collisions
     void applyBinaryProcesses( Params &params, int itime, Timers &timer );

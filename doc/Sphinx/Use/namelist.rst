@@ -2696,6 +2696,65 @@ This feature is accessible using the ``PrescribedField`` block::
 
 ----
 
+.. _FieldInjector:
+
+Field injectors
+^^^^^^^^^^^^^^^
+
+A field injector is an **additive "soft source"** that adds a user-defined
+electromagnetic field profile to one of the ``E`` or ``B`` fields at **every time step**,
+at a location of your choice **inside** the simulation box. Contrary to
+:ref:`PrescribedField`, the injected field **is not reset**: it enters Maxwell's
+equations and therefore **propagates self-consistently as a wave** through the plasma.
+This is intended to launch waves (e.g. an Alfven wave) from a fixed plane inside the
+domain rather than from a boundary.
+
+By localizing the profile around a fixed position (e.g. a narrow Gaussian in *x*) and
+giving it an oscillating time dependence, the injector drives a wave that radiates in
+both directions from that plane. In 2D/3D the profile may depend on the transverse
+coordinates, so the field pattern along *y* (and *z*) at the injection plane is fully
+customizable.
+
+It is applied using a ``FieldInjector`` block::
+
+  from numpy import exp, sin
+  x0, w, omega, ky = 5., 0.3, 0.3, 0.2
+  def inject_Bz(x, y, t):
+      return exp(-((x-x0)**2)/(2*w**2)) * sin(omega*t - ky*y)
+
+  FieldInjector(
+      field   = "Bz",
+      profile = inject_Bz,
+  )
+
+.. py:data:: field
+
+  The name of the injected field: ``"Ex"``, ``"Ey"``, ``"Ez"``, ``"Bx"``, ``"By"`` or ``"Bz"``.
+
+.. py:data:: profile
+
+  :type: float or :doc:`profile <profiles>`
+
+  The spatio-temporal profile of the injected field: a *python* function
+  with arguments (*x*, *t*) in 1D, (*x*, *y*, *t*) in 2D, or (*x*, *y*, *z*, *t*) in 3D.
+  The value added to the field each time step is this profile evaluated at the current time.
+
+.. note::
+
+  Because the source is additive (a "soft source"), the effective radiated wave amplitude
+  depends on the source amplitude and the time step; calibrate the amplitude empirically.
+  For a clean Alfven wave, inject the transverse magnetic perturbation (e.g. ``"Bz"`` and/or
+  ``"By"``) and, if desired, the corresponding transverse electric field with the Alfvenic
+  polarization :math:`\delta E = - v_A\, \delta B`.
+
+.. note::
+
+  ``FieldInjector`` requires a Yee-type (finite-difference) Maxwell solver; it is not
+  compatible with spectral / multiple-decomposition solvers.
+
+
+----
+
 .. _antennas:
 
 Antennas

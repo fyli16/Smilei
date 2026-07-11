@@ -604,6 +604,12 @@ class PrescribedField(SmileiComponent):
     field = None
     profile = None
 
+# additive soft field source (wave injection inside the domain)
+class FieldInjector(SmileiComponent):
+    """Field Injector (soft source added to an E or B field every timestep)"""
+    field = None
+    profile = None
+
 # external current (antenna)
 class Antenna(SmileiComponent):
     """Antenna"""

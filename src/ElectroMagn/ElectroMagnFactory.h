@@ -138,6 +138,49 @@ public:
             }
             EMfields->prescribedFields.push_back( extField );
         }
+
+        // -----------------
+        // FieldInjector properties (additive "soft source" that injects an E or B wave inside the domain)
+        // -----------------
+        unsigned int field_injector_number = PyTools::nComponents( "FieldInjector" );
+        if( field_injector_number > 0 && params.multiple_decomposition ) {
+            ERROR( "FieldInjector is not compatible with spectral / multiple-decomposition solvers (use a Yee-type solver)" );
+        }
+        if( first_creation && field_injector_number > 0 ) {
+            TITLE( "Initializing Field Injectors" );
+        }
+        for( unsigned int n_inj = 0; n_inj < field_injector_number; n_inj++ ) {
+            FieldInjector injector;
+            PyObject *profile;
+            std::string fieldName( "" );
+            PyTools::extract( "field", fieldName, "FieldInjector", n_inj );
+            if( fieldName!="Ex" && fieldName!="Ey" && fieldName!="Ez"
+             && fieldName!="Bx" && fieldName!="By" && fieldName!="Bz" ) {
+                ERROR( "FieldInjector #"<<n_inj<<": parameter 'field' must be one of Ex, Ey, Ez, Bx, By, Bz" );
+            }
+            std::ostringstream name( "" );
+            name << "FieldInjector[" << n_inj <<"].profile";
+            if( !PyTools::extract_pyProfile( "profile", profile, "FieldInjector", n_inj ) ) {
+                ERROR( "FieldInjector #"<<n_inj<<": parameter 'profile' not understood" );
+            }
+            injector.profile = new Profile( profile, params.nDim_field+1, name.str(), params, true, true, true );
+            // Find which index the field is in the allFields vector
+            injector.index = 1000;
+            for( unsigned int ifield=0; ifield<EMfields->allFields.size(); ifield++ ) {
+                if( EMfields->allFields[ifield]
+                        && fieldName==EMfields->allFields[ifield]->name ) {
+                    injector.index = ifield;
+                    break;
+                }
+            }
+            if( injector.index > EMfields->allFields.size()-1 ) {
+                ERROR( "FieldInjector #"<<n_inj<<": field "<<fieldName<<" not found" );
+            }
+            if( first_creation ) {
+                MESSAGE( 1, "Field injector " << fieldName << ": " << injector.profile->getInfo() );
+            }
+            EMfields->fieldInjectors.push_back( injector );
+        }
         
         
         // -----------------

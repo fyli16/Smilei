@@ -634,6 +634,21 @@ void ElectroMagn::resetPrescribedFields()
 
 
 
+// Additive "soft source": inject an E or B field profile without resetting it, so that it
+// enters Maxwell's equations and propagates as a wave (used e.g. for Alfven-wave injection).
+void ElectroMagn::applyFieldInjectors( Patch *patch, double time )
+{
+    for( vector<FieldInjector>::iterator fi=fieldInjectors.begin(); fi!=fieldInjectors.end(); fi++ ) {
+        if( fi->index < allFields.size() ) {
+            // applyPrescribedField adds (mode 3) the time-dependent profile to the field
+            applyPrescribedField( allFields[fi->index], fi->profile, patch, time );
+        }
+    }
+}
+
+
+
+
 void ElectroMagn::applyAntenna( unsigned int iAntenna, double intensity )
 {
     Field *field=nullptr;

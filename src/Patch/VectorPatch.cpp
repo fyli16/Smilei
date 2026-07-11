@@ -3908,6 +3908,18 @@ void VectorPatch::applyAntennas( double time )
     }
 }
 
+void VectorPatch::applyFieldInjectors( double time )
+{
+    if( patches_[0]->EMfields->fieldInjectors.size() == 0 ) {
+        return;
+    }
+    // Additive soft source added to E/B before the Maxwell solve, so it propagates as a wave
+    #pragma omp for schedule(static)
+    for( unsigned int ipatch=0 ; ipatch<size() ; ipatch++ ) {
+        patches_[ipatch]->EMfields->applyFieldInjectors( patches_[ipatch], time );
+    }
+}
+
 // For each patch, apply the binary processes
 void VectorPatch::applyBinaryProcesses( Params &params, int itime, Timers &timers )
 {

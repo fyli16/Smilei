@@ -55,6 +55,17 @@ struct PrescribedField {
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
+//! This structure contains the properties of each FieldInjector
+//! (additive "soft source" that injects an E or B field profile inside the domain)
+// ---------------------------------------------------------------------------------------------------------------------
+struct FieldInjector {
+
+    Profile *profile;
+
+    unsigned int index;
+};
+
+// ---------------------------------------------------------------------------------------------------------------------
 //! This structure contains the properties of each Antenna
 // ---------------------------------------------------------------------------------------------------------------------
 struct Antenna {
@@ -458,6 +469,12 @@ public:
 
 	//! Method use to reset the real value of all fields on which we imposed an external time field
 	virtual void resetPrescribedFields();
+
+    //! Field injectors: additive "soft sources" that inject an E or B profile every time step
+    std::vector<FieldInjector> fieldInjectors;
+
+    //! Method used to add the field injectors' profiles (soft source) to the E/B fields
+    void applyFieldInjectors( Patch *, double time );
 
     void saveExternalFields( Patch * );
 

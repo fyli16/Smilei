@@ -532,6 +532,9 @@ int main( int argc, char *argv[] )
             // apply currents from antennas
             vecPatches.applyAntennas( time_dual );
 
+            // apply additive soft field sources (field injectors) before the Maxwell solve
+            vecPatches.applyFieldInjectors( time_dual );
+
         } //End omp parallel region
 
         // solve Maxwell's equations
