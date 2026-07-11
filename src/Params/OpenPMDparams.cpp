@@ -104,6 +104,9 @@ OpenPMDparams::OpenPMDparams( Params &p ):
             } else if( params->EM_BCs[i][j] == "PML" ) {
                 fieldBoundary          .addString( "open" );
                 fieldBoundaryParameters.addString( "PML" );
+            } else if( params->EM_BCs[i][j] == "damping" ) {
+                fieldBoundary          .addString( "damping" );
+                fieldBoundaryParameters.addString( "damping" );
             } else {
                 ERROR( " impossible boundary condition: "<<params->EM_BCs[i][j] );
             }
