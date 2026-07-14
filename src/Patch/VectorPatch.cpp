@@ -3910,11 +3910,9 @@ void VectorPatch::applyAntennas( double time )
 
 void VectorPatch::applyFieldInjectors( double time )
 {
-    if( patches_[0]->EMfields->fieldInjectors.size() == 0 ) {
-        return;
-    }
-    // Additive soft source added to E/B before the Maxwell solve, so it propagates as a wave
-    #pragma omp for schedule(static)
+    // NB: the injector profile is evaluated through the Python interpreter, which is not
+    // thread-safe. This loop is therefore serial and must be called by a single thread
+    // (see the `omp master` guard at the call site in Smilei.cpp).
     for( unsigned int ipatch=0 ; ipatch<size() ; ipatch++ ) {
         patches_[ipatch]->EMfields->applyFieldInjectors( patches_[ipatch], time );
     }

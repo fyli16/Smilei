@@ -532,8 +532,13 @@ int main( int argc, char *argv[] )
             // apply currents from antennas
             vecPatches.applyAntennas( time_dual );
 
-            // apply additive soft field sources (field injectors) before the Maxwell solve
-            vecPatches.applyFieldInjectors( time_dual );
+            // apply additive soft field sources (field injectors) before the Maxwell solve.
+            // The profile is evaluated through Python (not thread-safe) -> run on one thread.
+            if( vecPatches(0)->EMfields->fieldInjectors.size() ) {
+                #pragma omp master
+                vecPatches.applyFieldInjectors( time_dual );
+                #pragma omp barrier
+            }
 
         } //End omp parallel region
 
