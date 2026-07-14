@@ -135,6 +135,7 @@ def _keep_python_running():
     profiles += [ant.time_profile for ant in Antenna]
     profiles += [ant.space_time_profile for ant in Antenna]
     profiles += [e.profile for e in PrescribedField]
+    profiles += [e.profile for e in FieldInjector]
     if len(MovingWindow)>0 or len(LoadBalancing)>0:
         # Verify if PML are used
         for bcs in Main.EM_boundary_conditions:
